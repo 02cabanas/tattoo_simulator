@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and Render</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        #content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #image-container {
+            position: relative;
+            width: calc(100vh * 9 / 19.5); /* Maintain aspect ratio 19.5:9 */
+            height: 100vh; /* Vertical height based on viewport */
+            max-width: 400px; /* Optional max width */
+            border: 1px solid #ccc;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+        #background-image {
+            width: 100%;
+            height: auto;
+        }
+        #overlay-box {
+            position: absolute;
+            border: 2px solid red;
+            overflow: hidden; /* Ensure uploaded image fits within the box */
+        }
+        #overlay-box img {
+            width: 100%;
+            height: auto;
+        }
+        #controls {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #controls label, #controls input, #controls button {
+            margin: 10px 0;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+        }
+        .slider-value {
+            margin-left: 10px;
+            min-width: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload an Image and Render</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Upload</button>
+    </form>
+    
+    <div id="content">
+        <div id="image-container">
+            <img id="background-image" src="{{ url_for('static', filename='background_body.png') }}" alt="Background">
+            <div id="overlay-box">
+                <img id="uploaded-image" src="" alt="Uploaded Image">
+            </div>
+        </div>
+        
+        <div id="controls">
+            <div class="slider-container">
+                <label for="slider-x">X Position:</label>
+                <input type="range" id="slider-x" name="slider-x" min="-200" max="200">
+                <span id="x-value" class="slider-value">0</span>
+            </div>
+            <div class="slider-container">
+                <label for="slider-y">Y Position:</label>
+                <input type="range" id="slider-y" name="slider-y" min="-200" max="200">
+                <span id="y-value" class="slider-value">0</span>
+            </div>
+            <div class="slider-container">
+                <label for="slider-scale">Scale:</label>
+                <input type="range" id="slider-scale" name="slider-scale" min="25" max="400">
+                <span id="scale-value" class="slider-value">100</span>
+            </div>
+            <button id="resetButton">Reset Sliders</button>
+        </div>
+    </div>
+    
+    <button id="simulateButton">Simulate Tattoo</button>
+    
+    <script>
+        document.getElementById('simulateButton').addEventListener('click', function() {
+            fetch('/simulate_tattoo', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Simulation started!');
+                } else {
+                    alert('Failed to start simulation.');
+                }
+            });
+        });
+
+        // Function to update the position and scale of the overlay box
+        function updateBox() {
+            const sliderX = document.getElementById('slider-x');
+            const sliderY = document.getElementById('slider-y');
+            const sliderScale = document.getElementById('slider-scale');
+            const box = document.getElementById('overlay-box');
+            const img = document.getElementById('background-image');
+            
+            const xPosition = parseInt(sliderX.value);
+            const yPosition = parseInt(sliderY.value);
+            const scalePercent = parseInt(sliderScale.value);
+            
+            const imgWidth = img.clientWidth;
+            const imgHeight = img.clientHeight;
+            
+            const originalBoxWidth = parseInt(box.dataset.originalWidth) || 100;
+            const originalBoxHeight = parseInt(box.dataset.originalHeight) || 100;
+            
+            const boxWidth = originalBoxWidth * (scalePercent / 100);
+            const boxHeight = originalBoxHeight * (scalePercent / 100);
+            
+            const xPos = (imgWidth / 2) + xPosition - (boxWidth / 2);
+            const yPos = (imgHeight / 2) - yPosition - (boxHeight / 2);
+            
+            box.style.width = `${boxWidth}px`;
+            box.style.height = `${boxHeight}px`;
+            box.style.left = `${xPos}px`;
+            box.style.top = `${yPos}px`;
+        }
+
+        // Attach event listeners to the sliders and update displayed values
+        document.getElementById('slider-x').addEventListener('input', function() {
+            document.getElementById('x-value').textContent = this.value;
+            updateBox();
+        });
+        document.getElementById('slider-y').addEventListener('input', function() {
+            document.getElementById('y-value').textContent = this.value;
+            updateBox();
+        });
+        document.getElementById('slider-scale').addEventListener('input', function() {
+            document.getElementById('scale-value').textContent = this.value;
+            updateBox();
+        });
+
+        // Handle image upload and display
+        document.querySelector('form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const uploadedImage = document.getElementById('uploaded-image');
+                    const overlayBox = document.getElementById('overlay-box');
+                    const fileInput = document.querySelector('input[type="file"]');
+                    const file = fileInput.files[0];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        uploadedImage.src = e.target.result;
+                        uploadedImage.onload = function() {
+                            // Set the dimensions of the overlay box based on the uploaded image
+                            overlayBox.style.width = `${uploadedImage.width}px`;
+                            overlayBox.style.height = `${uploadedImage.height}px`;
+                            overlayBox.dataset.originalWidth = uploadedImage.width;
+                            overlayBox.dataset.originalHeight = uploadedImage.height;
+                            updateSliderRanges();
+                            resetSliders();
+                        };
+                    };
+                    
+                    reader.readAsDataURL(file);
+                } else {
+                    alert(data.message);
+                }
+            });
+        });
+
+        // Function to reset sliders
+        function resetSliders() {
+            document.getElementById('slider-x').value = 0;
+            document.getElementById('x-value').textContent = 0;
+            document.getElementById('slider-y').value = 0;
+            document.getElementById('y-value').textContent = 0;
+            document.getElementById('slider-scale').value = 100;
+            document.getElementById('scale-value').textContent = 100;
+            updateBox();
+        }
+
+        // Function to update the ranges of the sliders based on the image and overlay dimensions
+        function updateSliderRanges() {
+            const sliderX = document.getElementById('slider-x');
+            const sliderY = document.getElementById('slider-y');
+            const img = document.getElementById('background-image');
+            const box = document.getElementById('overlay-box');
+
+            const imgWidth = img.clientWidth;
+            const imgHeight = img.clientHeight;
+
+            const originalBoxWidth = parseInt(box.dataset.originalWidth) || 100;
+            const originalBoxHeight = parseInt(box.dataset.originalHeight) || 100;
+
+            sliderX.min = -(imgWidth / 2 - originalBoxWidth / 2);
+            sliderX.max = (imgWidth / 2 - originalBoxWidth / 2);
+
+            sliderY.min = -(imgHeight / 2 - originalBoxHeight / 2);
+            sliderY.max = (imgHeight / 2 - originalBoxHeight / 2);
+        }
+
+        // Attach event listener to reset button
+        document.getElementById('resetButton').addEventListener('click', function(event) {
+            event.preventDefault();
+            resetSliders();
+        });
+
+        // Initialize sliders to default values
+        resetSliders();
+    </script>
+</body>
+</html>

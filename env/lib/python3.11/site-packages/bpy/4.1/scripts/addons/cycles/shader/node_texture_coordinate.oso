@@ -1,0 +1,254 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.13.7.0dev
+# options: -q -O2 -I/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders -I/Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders -o /Users/blender/git/blender-v410/build_arm64_release/intern/cycles/kernel/osl/shaders/node_texture_coordinate.oso
+shader node_texture_coordinate
+param	int	is_background	0		%read{0,0} %write{2147483647,-1}
+param	int	is_volume	0		%read{14,14} %write{2147483647,-1}
+param	int	from_dupli	0		%read{11,63} %write{2147483647,-1}
+param	int	use_transform	0		%read{32,32} %write{2147483647,-1}
+param	string	bump_offset	"center"		%read{47,61} %write{2147483647,-1}
+param	matrix	object_itfm	0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0		%read{33,33} %write{2147483647,-1} %derivs
+oparam	point	Generated	0 0 0		%read{19,66} %write{1,66} %derivs
+oparam	point	UV	0 0 0		%read{53,68} %write{2,68} %derivs
+oparam	point	Object	0 0 0		%read{55,70} %write{3,70} %derivs
+oparam	point	Camera	0 0 0		%read{57,72} %write{7,72} %derivs
+oparam	point	Window	0 0 0		%read{59,74} %write{8,75} %derivs
+oparam	normal	Normal	0 0 0		%read{2147483647,-1} %write{9,40}
+oparam	point	Reflection	0 0 0		%read{2147483647,-1} %write{10,46}
+global	point	P	%read{1,39} %write{2147483647,-1} %derivs
+global	vector	I	%read{10,45} %write{2147483647,-1}
+global	normal	N	%read{9,44} %write{2147483647,-1}
+global	float	u	%read{29,31} %write{2147483647,-1} %derivs
+global	float	v	%read{30,30} %write{2147483647,-1} %derivs
+local	point	___361_Pcam	%read{5,5} %write{4,4} %derivs
+local	matrix	___364_tfm	%read{19,19} %write{17,17} %derivs
+const	point	$const1	0 0 0		%read{2,4} %write{2147483647,-1}
+const	string	$const2	"camera"		%read{4,37} %write{2147483647,-1}
+const	string	$const3	"world"		%read{4,40} %write{2147483647,-1}
+temp	point	$tmp2	%read{7,7} %write{5,5} %derivs
+const	string	$const4	"transform"		%read{6,38} %write{2147483647,-1}
+const	string	$const5	"common"		%read{7,39} %write{2147483647,-1}
+temp	int	$tmp3	%read{2147483647,-1} %write{8,8}
+const	string	$const6	"NDC"		%read{8,39} %write{2147483647,-1}
+temp	int	$tmp4	%read{2147483647,-1} %write{12,12}
+const	string	$const7	"geom:dupli_generated"		%read{12,12} %write{2147483647,-1}
+temp	int	$tmp5	%read{2147483647,-1} %write{13,13}
+const	string	$const8	"geom:dupli_uv"		%read{13,13} %write{2147483647,-1}
+const	string	$const9	"object"		%read{16,40} %write{2147483647,-1}
+temp	int	$tmp6	%read{18,18} %write{17,17}
+const	string	$const10	"geom:generated_transform"		%read{17,17} %write{2147483647,-1}
+temp	int	$tmp7	%read{2147483647,-1} %write{20,20}
+const	string	$const11	"geom:uv"		%read{20,26} %write{2147483647,-1}
+temp	int	$tmp8	%read{22,22} %write{21,21}
+const	string	$const12	"geom:generated"		%read{21,21} %write{2147483647,-1}
+temp	int	$tmp9	%read{23,23} %write{22,22}
+const	int	$const13	0		%read{22,63} %write{2147483647,-1}
+temp	int	$tmp10	%read{27,27} %write{26,26}
+temp	int	$tmp11	%read{28,28} %write{27,27}
+const	float	$const14	1		%read{29,29} %write{2147483647,-1}
+temp	float	$tmp12	%read{30,30} %write{29,29} %derivs
+temp	float	$tmp13	%read{31,31} %write{30,30} %derivs
+const	float	$const15	0		%read{31,75} %write{2147483647,-1}
+temp	vector	$tmp14	%read{46,46} %write{45,45}
+const	string	$const16	"reflect"		%read{41,41} %write{2147483647,-1}
+const	int	$const17	2		%read{75,75} %write{2147483647,-1}
+temp	float	$tmp15	%read{43,43} %write{42,42}
+temp	float	$tmp16	%read{44,44} %write{43,43}
+const	float	$const18	2		%read{43,43} %write{2147483647,-1}
+temp	vector	$tmp17	%read{45,45} %write{44,44}
+const	string	$const19	"dx"		%read{47,47} %write{2147483647,-1}
+temp	int	$tmp18	%read{48,48} %write{47,47}
+temp	int	$tmp19	%read{50,50} %write{49,49}
+temp	vector	$tmp20	%read{52,52} %write{51,51} %derivs
+temp	vector	$tmp21	%read{54,54} %write{53,53} %derivs
+temp	vector	$tmp22	%read{56,56} %write{55,55} %derivs
+temp	vector	$tmp23	%read{58,58} %write{57,57} %derivs
+temp	vector	$tmp24	%read{60,60} %write{59,59} %derivs
+const	string	$const20	"dy"		%read{61,61} %write{2147483647,-1}
+temp	int	$tmp25	%read{62,62} %write{61,61}
+temp	int	$tmp26	%read{64,64} %write{63,63}
+temp	vector	$tmp27	%read{66,66} %write{65,65} %derivs
+temp	vector	$tmp28	%read{68,68} %write{67,67} %derivs
+temp	vector	$tmp29	%read{70,70} %write{69,69} %derivs
+temp	vector	$tmp30	%read{72,72} %write{71,71} %derivs
+temp	vector	$tmp31	%read{74,74} %write{73,73} %derivs
+code ___main___
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:23
+#   if (is_background) {
+	if		is_background 11 47 	%filename{"/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl"} %line{23} %argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:24
+#     Generated = P;
+	assign		Generated P 	%line{24} %argrw{"wr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:25
+#     UV = point(0.0, 0.0, 0.0);
+	assign		UV $const1 	%line{25} %argrw{"wr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:26
+#     Object = P;
+	assign		Object P 	%line{26} %argrw{"wr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:27
+#     point Pcam = transform("camera", "world", point(0, 0, 0));
+	transform	___361_Pcam $const2 $const3 $const1 	%line{27} %argrw{"wrrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:28
+#     Camera = transform("camera", P + Pcam);
+	add		$tmp2 P ___361_Pcam 	%line{28} %argrw{"wrr"}
+	functioncall	$const4 8 	%argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h:263
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	Camera $const5 $const2 $tmp2 	%filename{"/Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h"} %line{263} %argrw{"wrrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:29
+#     getattribute("NDC", Window);
+	getattribute	$tmp3 $const6 Window 	%filename{"/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl"} %line{29} %argrw{"wrw"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:30
+#     Normal = N;
+	assign		Normal N 	%line{30} %argrw{"wr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:31
+#     Reflection = I;
+	assign		Reflection I 	%line{31} %argrw{"wr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:34
+#     if (from_dupli) {
+	if		from_dupli 14 32 	%line{34} %argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:35
+#       getattribute("geom:dupli_generated", Generated);
+	getattribute	$tmp4 $const7 Generated 	%line{35} %argrw{"wrw"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:36
+#       getattribute("geom:dupli_uv", UV);
+	getattribute	$tmp5 $const8 UV 	%line{36} %argrw{"wrw"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:38
+#     else if (is_volume) {
+	if		is_volume 21 32 	%line{38} %argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:39
+#       Generated = transform("object", P);
+	functioncall	$const4 17 	%line{39} %argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h:263
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	Generated $const5 $const9 P 	%filename{"/Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h"} %line{263} %argrw{"wrrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:42
+#       if (getattribute("geom:generated_transform", tfm))
+	getattribute	$tmp6 $const10 ___364_tfm 	%filename{"/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl"} %line{42} %argrw{"wrw"}
+	if		$tmp6 20 20 	%argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:43
+#         Generated = transform(tfm, Generated);
+	transform	Generated ___364_tfm Generated 	%line{43} %argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:45
+#       getattribute("geom:uv", UV);
+	getattribute	$tmp7 $const11 UV 	%line{45} %argrw{"wrw"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:48
+#       if (!getattribute("geom:generated", Generated)) {
+	getattribute	$tmp8 $const12 Generated 	%line{48} %argrw{"wrw"}
+	eq		$tmp9 $tmp8 $const13 	%argrw{"wrr"}
+	if		$tmp9 26 26 	%argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:49
+#         Generated = transform("object", P);
+	functioncall	$const4 26 	%line{49} %argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h:263
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	Generated $const5 $const9 P 	%filename{"/Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h"} %line{263} %argrw{"wrrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:51
+#       if (!getattribute("geom:uv", UV)) {
+	getattribute	$tmp10 $const11 UV 	%filename{"/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl"} %line{51} %argrw{"wrw"}
+	eq		$tmp11 $tmp10 $const13 	%argrw{"wrr"}
+	if		$tmp11 32 32 	%argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:52
+#         UV = point(1.0 - u - v, u, 0.0);
+	sub		$tmp12 $const14 u 	%line{52} %argrw{"wrr"}
+	sub		$tmp13 $tmp12 v 	%argrw{"wrr"}
+	point		UV $tmp13 u $const15 	%argrw{"wrrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:56
+#     if (use_transform) {
+	if		use_transform 34 36 	%line{56} %argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:57
+#       Object = transform(object_itfm, P);
+	transform	Object object_itfm P 	%line{57} %argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:60
+#       Object = transform("object", P);
+	functioncall	$const4 36 	%line{60} %argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h:263
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	Object $const5 $const9 P 	%filename{"/Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h"} %line{263} %argrw{"wrrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:62
+#     Camera = transform("camera", P);
+	functioncall	$const4 38 	%filename{"/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl"} %line{62} %argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h:263
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	Camera $const5 $const2 P 	%filename{"/Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h"} %line{263} %argrw{"wrrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:63
+#     Window = transform("NDC", P);
+	functioncall	$const4 40 	%filename{"/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl"} %line{63} %argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h:263
+# point  transform (string to, point p)  { return transform("common",to,p); }
+	transform	Window $const5 $const6 P 	%filename{"/Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h"} %line{263} %argrw{"wrrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:64
+#     Normal = transform("world", "object", N);
+	transformn	Normal $const3 $const9 N 	%filename{"/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl"} %line{64} %argrw{"wrrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:65
+#     Reflection = -reflect(I, N);
+	functioncall	$const16 46 	%line{65} %argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h:212
+# vector reflect (vector I, vector N) { return I - 2*dot(N,I)*N; }
+	dot		$tmp15 N I 	%filename{"/Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h"} %line{212} %argrw{"wrr"}
+	mul		$tmp16 $const18 $tmp15 	%argrw{"wrr"}
+	mul		$tmp17 $tmp16 N 	%argrw{"wrr"}
+	sub		$tmp14 I $tmp17 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:65
+#     Reflection = -reflect(I, N);
+	neg		Reflection $tmp14 	%filename{"/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl"} %line{65} %argrw{"wr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:68
+#   if (bump_offset == "dx") {
+	eq		$tmp18 bump_offset $const19 	%line{68} %argrw{"wrr"}
+	if		$tmp18 61 75 	%argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:69
+#     if (!from_dupli) {
+	eq		$tmp19 from_dupli $const13 	%line{69} %argrw{"wrr"}
+	if		$tmp19 55 55 	%argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:70
+#       Generated += Dx(Generated);
+	Dx		$tmp20 Generated 	%line{70} %argrw{"wr"} %argderivs{1}
+	add		Generated Generated $tmp20 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:71
+#       UV += Dx(UV);
+	Dx		$tmp21 UV 	%line{71} %argrw{"wr"} %argderivs{1}
+	add		UV UV $tmp21 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:73
+#     Object += Dx(Object);
+	Dx		$tmp22 Object 	%line{73} %argrw{"wr"} %argderivs{1}
+	add		Object Object $tmp22 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:74
+#     Camera += Dx(Camera);
+	Dx		$tmp23 Camera 	%line{74} %argrw{"wr"} %argderivs{1}
+	add		Camera Camera $tmp23 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:75
+#     Window += Dx(Window);
+	Dx		$tmp24 Window 	%line{75} %argrw{"wr"} %argderivs{1}
+	add		Window Window $tmp24 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:77
+#   else if (bump_offset == "dy") {
+	eq		$tmp25 bump_offset $const20 	%line{77} %argrw{"wrr"}
+	if		$tmp25 75 75 	%argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:78
+#     if (!from_dupli) {
+	eq		$tmp26 from_dupli $const13 	%line{78} %argrw{"wrr"}
+	if		$tmp26 69 69 	%argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:79
+#       Generated += Dy(Generated);
+	Dy		$tmp27 Generated 	%line{79} %argrw{"wr"} %argderivs{1}
+	add		Generated Generated $tmp27 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:80
+#       UV += Dy(UV);
+	Dy		$tmp28 UV 	%line{80} %argrw{"wr"} %argderivs{1}
+	add		UV UV $tmp28 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:82
+#     Object += Dy(Object);
+	Dy		$tmp29 Object 	%line{82} %argrw{"wr"} %argderivs{1}
+	add		Object Object $tmp29 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:83
+#     Camera += Dy(Camera);
+	Dy		$tmp30 Camera 	%line{83} %argrw{"wr"} %argderivs{1}
+	add		Camera Camera $tmp30 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:84
+#     Window += Dy(Window);
+	Dy		$tmp31 Window 	%line{84} %argrw{"wr"} %argderivs{1}
+	add		Window Window $tmp31 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_texture_coordinate.osl:87
+#   Window[2] = 0.0;
+	compassign	Window $const17 $const15 	%line{87} %argrw{"wrr"}
+	end

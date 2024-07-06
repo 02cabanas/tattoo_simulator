@@ -1,0 +1,52 @@
+OpenShadingLanguage 1.00
+# Compiled by oslc 1.13.7.0dev
+# options: -q -O2 -I/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders -I/Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders -o /Users/blender/git/blender-v410/build_arm64_release/intern/cycles/kernel/osl/shaders/node_sheen_bsdf.oso
+shader node_sheen_bsdf
+param	color	Color	0.800000012 0.800000012 0.800000012		%read{7,11} %write{2147483647,-1}
+param	string	distribution	"microfiber"		%read{4,8} %write{2147483647,-1}
+param	float	Roughness	0		%read{2,2} %write{2147483647,-1}
+param	normal	Normal	0 0 0		%read{6,10} %write{0,0} %initexpr
+oparam	closure color	BSDF			%read{2147483647,-1} %write{7,11}
+global	normal	N	%read{0,0} %write{2147483647,-1}
+local	float	roughness	%read{6,10} %write{3,3}
+const	float	$const1	0		%read{3,3} %write{2147483647,-1}
+const	float	$const2	1		%read{2,2} %write{2147483647,-1}
+const	string	$const3	"clamp"		%read{1,1} %write{2147483647,-1}
+temp	float	$tmp1	%read{3,3} %write{2,2}
+const	string	$const4	"ashikhmin"		%read{4,4} %write{2147483647,-1}
+temp	int	$tmp2	%read{5,5} %write{4,4}
+temp	closure color	$tmp3	%read{7,7} %write{6,6}
+const	string	$const5	"ashikhmin_velvet"		%read{6,6} %write{2147483647,-1}
+const	string	$const6	"microfiber"		%read{8,8} %write{2147483647,-1}
+temp	int	$tmp4	%read{9,9} %write{8,8}
+temp	closure color	$tmp5	%read{11,11} %write{10,10}
+const	string	$const7	"sheen"		%read{10,10} %write{2147483647,-1}
+code Normal
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_sheen_bsdf.osl:11
+#                        normal Normal = N,
+	assign		Normal N 	%filename{"/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_sheen_bsdf.osl"} %line{11} %argrw{"wr"}
+code ___main___
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_sheen_bsdf.osl:14
+#   float roughness = clamp(Roughness, 0.0, 1.0);
+	functioncall	$const3 4 	%filename{"/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_sheen_bsdf.osl"} %line{14} %argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h:141
+# float  clamp (float x, float minval, float maxval) { return max(min(x,maxval),minval); }
+	min		$tmp1 Roughness $const2 	%filename{"/Users/blender/git/blender-v410/blender.git/lib/macos_arm64/osl/share/OSL/shaders/stdosl.h"} %line{141} %argrw{"wrr"}
+	max		roughness $tmp1 $const1 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_sheen_bsdf.osl:16
+#   if (distribution == "ashikhmin")
+	eq		$tmp2 distribution $const4 	%filename{"/Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_sheen_bsdf.osl"} %line{16} %argrw{"wrr"}
+	if		$tmp2 8 12 	%argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_sheen_bsdf.osl:17
+#     BSDF = Color * ashikhmin_velvet(Normal, roughness);
+	closure		$tmp3 $const5 Normal roughness 	%line{17} %argrw{"wrrr"}
+	mul		BSDF $tmp3 Color 	%argrw{"wrr"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_sheen_bsdf.osl:18
+#   else if (distribution == "microfiber")
+	eq		$tmp4 distribution $const6 	%line{18} %argrw{"wrr"}
+	if		$tmp4 12 12 	%argrw{"r"}
+# /Users/blender/git/blender-v410/blender.git/intern/cycles/kernel/osl/shaders/node_sheen_bsdf.osl:19
+#     BSDF = Color * sheen(Normal, roughness);
+	closure		$tmp5 $const7 Normal roughness 	%line{19} %argrw{"wrrr"}
+	mul		BSDF $tmp5 Color 	%argrw{"wrr"}
+	end
