@@ -79,7 +79,7 @@
 
 
 ## Description
-- A website to easily generate realistic renders of how specific tattoos would look like on a model body.
+- A website to easily generate realistic renders of how specific tattoos would look on a model body.
 
 
 
