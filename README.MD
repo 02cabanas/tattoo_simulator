@@ -1,5 +1,5 @@
 ###### License: GNU Affero General Public License v3.0
-# **Tattoo sumlator**
+# **Tattoo sumulator**
 ### GPT prompt Title is called "Python blender image rendering"
 
 ## Pre-production considerations:
