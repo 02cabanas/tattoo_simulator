@@ -1,10 +1,69 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Orbitron', sans-serif; /* Techy font for cyberpunk feel */
     margin: 40px;
+    background-color: #000000; /* True black background */
+    color: #ff69b4; /* Neon pink text */
 }
+
 h1 {
-    color: #333;
+    color: #ff69b4; /* Neon pink for headings */
+    text-shadow: 1px 1px 2px #000000; /* Soft shadow for glowing effect */
 }
+
 form, button {
     margin: 10px 0;
+}
+
+button {
+    background-color: #ffffff; /* White background for buttons */
+    border: 2px solid #ff69b4; /* Neon pink border */
+    color: #000000; /* Black text for contrast */
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(255, 105, 180, .4); /* Pinkish shadow for depth */
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out; /* Smooth transformation on hover */
+}
+
+button:hover {
+    background-color: #ff69b4; /* Neon pink background on hover */
+    color: #ffffff; /* White text on hover */
+    transform: scale(1.1); /* Slight increase in size on hover */
+    box-shadow: 0 6px 8px rgba(255, 105, 180, .6); /* More prominent pink shadow */
+}
+
+button:active {
+    transform: scale(0.95); /* Button press effect */
+}
+
+input[type="file"],
+input[type="range"] {
+    background: #222; /* Dark inputs for better integration into the theme */
+    border: 1px solid #ff69b4; /* Neon pink border */
+    color: white;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    background: #ff69b4; /* Neon pink slider thumb */
+    border: 1px solid #ffffff; /* White border for contrast */
+}
+
+input[type="file"]:hover,
+input[type="range"]:hover {
+    background: #333; /* Darker background on hover */
+}
+
+input[type="text"], input[type="email"], input[type="password"] {
+    background: #222; /* Dark background for inputs */
+    border: 1px solid #ff69b4; /* Neon pink border */
+    color: white;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+    border-color: #ff69b4; /* Focus state with a neon pink border */
+    outline: none; /* Removing default outline */
 }

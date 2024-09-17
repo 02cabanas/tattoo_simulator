@@ -1,29 +1,29 @@
-from flask import Flask, request, send_file, jsonify, render_template
+from flask import Flask, render_template, request, redirect, url_for
+from werkzeug.utils import secure_filename
 import os
-import subprocess
-
 app = Flask(__name__)
-UPLOAD_FOLDER = 'uploads/'
-RENDER_FOLDER = 'renders/'
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-os.makedirs(RENDER_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = 'uploads/'  # Ensure the 'uploads/' directory exists
+
 
 @app.route('/')
-def index():
+
+def home():
     return render_template('index.html')
+
 
 
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
-        return jsonify({'success': False, 'message': 'No file part'})
+        return 'No file part', 400
     file = request.files['file']
     if file.filename == '':
-        return jsonify({'success': False, 'message': 'No selected file'})
+        return 'No selected file', 400
     if file:
-        filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+        filename = secure_filename(file.filename)
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)  # Accessing via app.config
         file.save(filepath)
-        return jsonify({'success': True, 'message': 'File uploaded successfully'})
+        return 'File successfully uploaded'
 
 @app.route('/simulate_tattoo', methods=['POST'])
 def simulate_tattoo():
