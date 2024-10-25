@@ -51,13 +51,44 @@
             margin-left: 10px;
             min-width: 30px;
         }
+        .file-upload-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .custom-file-upload {
+            border: 1px solid #ccc;
+            display: inline-block;
+            padding: 6px 12px;
+            cursor: pointer;
+            background-color: #f8f8f8;
+            color: #333;
+            border-radius: 4px;
+            margin-right: 10px;
+        }
+        .custom-file-upload:hover {
+            background-color: #e8e8e8;
+        }
+        #file-chosen {
+            font-style: italic;
+            color: #666;
+        }
     </style>
 </head>
 <body>
     <h1>Upload an Image and Render</h1>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" required>
-        <button type="submit">Upload</button>
+    <!-- Replace the existing form with this -->
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="file-upload-container">
+            <input type="file" name="file" id="fileInput" accept="image/*" required>
+            <label for="fileInput" class="custom-file-upload">
+                Choose an image
+            </label>
+            <span id="file-chosen">No file chosen</span>
+        </div>
     </form>
     
     <div id="content">
@@ -147,11 +178,19 @@
             updateBox();
         });
 
-        // Handle image upload and display
-        document.querySelector('form').addEventListener('submit', function(event) {
-            event.preventDefault();
+        const fileInput = document.getElementById('fileInput');
+        const fileChosen = document.getElementById('file-chosen');
+
+        fileInput.addEventListener('change', function(event) {
+            if (this.files && this.files[0]) {
+                fileChosen.textContent = this.files[0].name;
+            } else {
+                fileChosen.textContent = 'No file chosen';
+            }
+
+            const formData = new FormData();
+            formData.append('file', event.target.files[0]);
             
-            const formData = new FormData(event.target);
             fetch('/upload', {
                 method: 'POST',
                 body: formData
@@ -161,27 +200,30 @@
                 if (data.success) {
                     const uploadedImage = document.getElementById('uploaded-image');
                     const overlayBox = document.getElementById('overlay-box');
-                    const fileInput = document.querySelector('input[type="file"]');
-                    const file = fileInput.files[0];
-                    const reader = new FileReader();
                     
-                    reader.onload = function(e) {
-                        uploadedImage.src = e.target.result;
-                        uploadedImage.onload = function() {
-                            // Set the dimensions of the overlay box based on the uploaded image
-                            overlayBox.style.width = `${uploadedImage.width}px`;
-                            overlayBox.style.height = `${uploadedImage.height}px`;
-                            overlayBox.dataset.originalWidth = uploadedImage.width;
-                            overlayBox.dataset.originalHeight = uploadedImage.height;
-                            updateSliderRanges();
-                            resetSliders();
-                        };
+                    // Set the src of the image to the uploaded file
+                    uploadedImage.src = `/uploads/${data.filename}`;
+                    
+                    uploadedImage.onload = function() {
+                        // Set the dimensions of the overlay box based on the uploaded image
+                        overlayBox.style.width = `${uploadedImage.width}px`;
+                        overlayBox.style.height = `${uploadedImage.height}px`;
+                        overlayBox.dataset.originalWidth = uploadedImage.width;
+                        overlayBox.dataset.originalHeight = uploadedImage.height;
+                        updateSliderRanges();
+                        resetSliders();
+                        updateBox();  // Make sure the box is positioned correctly
                     };
                     
-                    reader.readAsDataURL(file);
+                    // Show the overlay box
+                    overlayBox.style.display = 'block';
                 } else {
                     alert(data.message);
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while uploading the file.');
             });
         });
 
