@@ -2,8 +2,10 @@ from flask import Flask, render_template, request, redirect, url_for, jsonify, s
 from werkzeug.utils import secure_filename
 import os
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+# Define paths for uploaded files and render output
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+RENDER_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'renders')
 
 
 @app.route('/')

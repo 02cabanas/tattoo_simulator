@@ -3,84 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Tattoo Simulator</title>
     <!-- Link CSS file -->
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <style>
-        #content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        #image-container {
-            position: relative;
-            width: calc(100vh * 9 / 19.5); /* Maintain aspect ratio 19.5:9 */
-            height: 100vh; /* Vertical height based on viewport */
-            max-width: 400px; /* Optional max width */
-            border: 1px solid #ccc;
-            overflow: hidden;
-            background-color: #f0f0f0;
-        }
-        #background-image {
-            width: 100%;
-            height: auto;
-        }
-        #overlay-box {
-            position: absolute;
-            border: 2px solid red;
-            overflow: hidden; /* Ensure uploaded image fits within the box */
-        }
-        #overlay-box img {
-            width: 100%;
-            height: auto;
-        }
-        #controls {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        #controls label, #controls input, #controls button {
-            margin: 10px 0;
-        }
-        .slider-container {
-            display: flex;
-            align-items: center;
-        }
-        .slider-value {
-            margin-left: 10px;
-            min-width: 30px;
-        }
-        .file-upload-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        input[type="file"] {
-            display: none;
-        }
-        .custom-file-upload {
-            border: 1px solid #ccc;
-            display: inline-block;
-            padding: 6px 12px;
-            cursor: pointer;
-            background-color: #f8f8f8;
-            color: #333;
-            border-radius: 4px;
-            margin-right: 10px;
-        }
-        .custom-file-upload:hover {
-            background-color: #e8e8e8;
-        }
-        #file-chosen {
-            font-style: italic;
-            color: #666;
-        }
-    </style>
 </head>
 <body>
     <h1>Upload an Image and Render</h1>
-    <!-- Replace the existing form with this -->
     <form id="uploadForm" enctype="multipart/form-data">
         <div class="file-upload-container">
             <input type="file" name="file" id="fileInput" accept="image/*" required>
@@ -100,21 +28,36 @@
         </div>
         
         <div id="controls">
-            <div class="slider-container">
+            <div class="slider-wrapper">
                 <label for="slider-x">X Position:</label>
-                <input type="range" id="slider-x" name="slider-x" min="-200" max="200">
+                <div class="slider-control">
+                    <button class="decrement" data-target="slider-x">−</button>
+                    <input type="range" id="slider-x" name="slider-x" min="-200" max="200" step="1">
+                    <button class="increment" data-target="slider-x">+</button>
+                </div>
                 <span id="x-value" class="slider-value">0</span>
             </div>
-            <div class="slider-container">
+            
+            <div class="slider-wrapper">
                 <label for="slider-y">Y Position:</label>
-                <input type="range" id="slider-y" name="slider-y" min="-200" max="200">
+                <div class="slider-control">
+                    <button class="decrement" data-target="slider-y">−</button>
+                    <input type="range" id="slider-y" name="slider-y" min="-200" max="200" step="1">
+                    <button class="increment" data-target="slider-y">+</button>
+                </div>
                 <span id="y-value" class="slider-value">0</span>
             </div>
-            <div class="slider-container">
+            
+            <div class="slider-wrapper">
                 <label for="slider-scale">Scale:</label>
-                <input type="range" id="slider-scale" name="slider-scale" min="25" max="400">
+                <div class="slider-control">
+                    <button class="decrement" data-target="slider-scale">−</button>
+                    <input type="range" id="slider-scale" name="slider-scale" min="25" max="400" step="1">
+                    <button class="increment" data-target="slider-scale">+</button>
+                </div>
                 <span id="scale-value" class="slider-value">100</span>
             </div>
+            
             <button id="resetButton">Reset Sliders</button>
         </div>
     </div>
@@ -164,19 +107,65 @@
             box.style.top = `${yPos}px`;
         }
 
+        // Function to handle slider input and update displayed values
+        function handleSliderInput(event) {
+            const slider = event.target;
+            const valueSpan = document.getElementById(`${slider.id.split('-')[1]}-value`);
+            valueSpan.textContent = slider.value;
+            updateBox();
+        }
+
         // Attach event listeners to the sliders and update displayed values
-        document.getElementById('slider-x').addEventListener('input', function() {
-            document.getElementById('x-value').textContent = this.value;
-            updateBox();
+        document.getElementById('slider-x').addEventListener('input', handleSliderInput);
+        document.getElementById('slider-y').addEventListener('input', handleSliderInput);
+        document.getElementById('slider-scale').addEventListener('input', handleSliderInput);
+
+        // Handle increment and decrement buttons with hold-down functionality
+        document.querySelectorAll('.increment, .decrement').forEach(button => {
+            let interval;
+
+            const step = button.classList.contains('increment') ? 1 : -1;
+
+            const start = () => {
+                adjustSlider(button.dataset.target, step);
+                interval = setInterval(() => {
+                    adjustSlider(button.dataset.target, step);
+                }, 100);
+            };
+
+            const stop = () => {
+                clearInterval(interval);
+            };
+
+            // Mouse events
+            button.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                start();
+            });
+
+            button.addEventListener('mouseup', stop);
+            button.addEventListener('mouseleave', stop);
+
+            // Touch events
+            button.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                start();
+            }, { passive: false });
+
+            button.addEventListener('touchend', stop);
+            button.addEventListener('touchcancel', stop);
         });
-        document.getElementById('slider-y').addEventListener('input', function() {
-            document.getElementById('y-value').textContent = this.value;
-            updateBox();
-        });
-        document.getElementById('slider-scale').addEventListener('input', function() {
-            document.getElementById('scale-value').textContent = this.value;
-            updateBox();
-        });
+
+        function adjustSlider(targetId, step) {
+            const target = document.getElementById(targetId);
+            if (target) {
+                let newValue = parseInt(target.value) + step;
+                if (newValue < parseInt(target.min)) newValue = parseInt(target.min);
+                if (newValue > parseInt(target.max)) newValue = parseInt(target.max);
+                target.value = newValue;
+                target.dispatchEvent(new Event('input'));
+            }
+        }
 
         const fileInput = document.getElementById('fileInput');
         const fileChosen = document.getElementById('file-chosen');
