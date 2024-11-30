@@ -1,4 +1,5 @@
 *.blend1
+*.blend
 *.DS_Store
 env/lib/python3.11/site-packages/bpy/__init__.so
 
