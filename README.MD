@@ -1,10 +1,7 @@
 ###### License: GNU Affero General Public License v3.0
-# **Tattoo sumulator**
+# **Tattoo simulator**
 ### GPT prompt Title is called "Python blender image rendering"
-- Use the following terminal command to setup env and flask app variable:
-    source env/bin/activate && export FLASK_APP=flaskapp/app.py  
-- run app using following terminal command:
-    flask run
+
 
 ## Pre-production considerations:
 - I am currently git-ignoring the __init__.so files of the bpy python extension that I'm using to interact with the Blender file using Python

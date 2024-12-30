@@ -1,0 +1,12 @@
+name: tattoo_simulator
+description: A new Flutter project.
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.6.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.2
+  file_picker: ^5.0.0
